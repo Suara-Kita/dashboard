@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+@theme {
+    --color-error-container: #93000a;
+    --color-on-primary-container: #007117;
+    --color-surface-container-highest: #353437;
+    --color-tertiary-fixed: #ffdad7;
+    --color-error: #ffb4ab;
+    --color-background: #131315;
+    --color-primary-fixed: #72ff70;
+    --color-secondary-container: #00d2fd;
+    --color-primary-fixed-dim: #00e639;
+    --color-on-primary-fixed: #002203;
+    --color-on-secondary-container: #005669;
+    --color-on-primary: #003907;
+    --color-on-primary-fixed-variant: #00530e;
+    --color-tertiary: #fff7f6;
+    --color-surface-container-lowest: #0e0e10;
+    --color-outline: #84967e;
+    --color-surface-container: #201f21;
+    --color-on-error-container: #ffdad6;
+    --color-primary-container: #00ff41;
+    --color-on-tertiary-fixed: #410004;
+    --color-inverse-primary: #006e16;
+    --color-surface: #131315;
+    --color-inverse-surface: #e5e1e4;
+    --color-on-secondary-fixed: #001f27;
+    --color-on-secondary-fixed-variant: #004e5f;
+    --color-on-tertiary-container: #bd1d26;
+    --color-secondary-fixed-dim: #3cd7ff;
+    --color-on-tertiary-fixed-variant: #930013;
+    --color-outline-variant: #3b4b37;
+    --color-primary: #ebffe2;
+    --color-inverse-on-surface: #313032;
+    --color-tertiary-container: #ffd2ce;
+    --color-secondary: #a2e7ff;
+    --color-surface-container-low: #1c1b1d;
+    --color-surface-bright: #39393b;
+    --color-secondary-fixed: #b4ebff;
+    --color-on-secondary: #003642;
+    --color-on-background: #e5e1e4;
+    --color-surface-dim: #131315;
+    --color-on-tertiary: #68000a;
+    --color-on-surface: #e5e1e4;
+    --color-tertiary-fixed-dim: #ffb3ad;
+    --color-surface-variant: #353437;
+    --color-on-error: #690005;
+    --color-surface-tint: #00e639;
+    --color-surface-container-high: #2a2a2c;
+    --color-on-surface-variant: #b9ccb2;
+
+    --font-display-header: "JetBrains Mono", monospace;
+    --font-section-header: "JetBrains Mono", monospace;
+    --font-telemetry-data: "JetBrains Mono", monospace;
+    --font-micro-metric: "JetBrains Mono", monospace;
+    --font-command-label: "Geist", sans-serif;
+    --font-panel-title: "JetBrains Mono", monospace;
+
+    --text-display-header: 24px;
+    --text-display-header--line-height: 32px;
+    --text-display-header--letter-spacing: 0.24em;
+    --text-display-header--font-weight: 700;
+
+    --text-section-header: 16px;
+    --text-section-header--line-height: 24px;
+    --text-section-header--letter-spacing: 0.2em;
+    --text-section-header--font-weight: 700;
+
+    --text-telemetry-data: 12px;
+    --text-telemetry-data--line-height: 16px;
+
+    --text-micro-metric: 9px;
+    --text-micro-metric--line-height: 12px;
+    --text-micro-metric--letter-spacing: 0.1em;
+
+    --text-command-label: 11px;
+    --text-command-label--line-height: 14px;
+    --text-command-label--letter-spacing: 0.1em;
+    --text-command-label--font-weight: 700;
+
+    --text-panel-title: 13px;
+    --text-panel-title--line-height: 18px;
+    --text-panel-title--letter-spacing: 0.18em;
+    --text-panel-title--font-weight: 700;
+}
+
+@keyframes scanline {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(100%);
+    }
+}
+
+.scanlines::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent 0%,
+        rgba(0, 0, 0, 0.05) 50%,
+        transparent 100%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.scanline-sweep {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(0, 255, 65, 0.1);
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+    animation: scanline 8s linear infinite;
+    z-index: 101;
+    pointer-events: none;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-enter {
+  animation: enter 0.4s ease-out;
+}
+
+.glass-panel {
+    background: rgba(14, 14, 16, 0.92);
+    backdrop-filter: blur(12px);
+}
+
+::-webkit-scrollbar {
+    width: 4px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+}
+
+.text-glow {
+    text-shadow: 0 0 8px rgba(0, 230, 57, 0.6);
+}
+.border-glow {
+    box-shadow: 0 0 12px rgba(0, 230, 57, 0.18);
+}
