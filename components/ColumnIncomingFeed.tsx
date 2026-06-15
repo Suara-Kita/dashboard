@@ -3,8 +3,13 @@
 import { useRef, useState, useEffect } from 'react';
 import DataCard from './DataCard';
 import { useDashboardData } from '@/lib/hooks';
+import type { Issue } from '@/lib/types';
 
-export default function ColumnIncomingFeed() {
+interface ColumnIncomingFeedProps {
+  onOpenDialog: (issue: Issue) => void;
+}
+
+export default function ColumnIncomingFeed({ onOpenDialog }: ColumnIncomingFeedProps) {
   const { metrics, issues, loading, error } = useDashboardData();
   const [newIds, setNewIds] = useState<Set<string>>(new Set());
   const prevIdsRef = useRef<Set<string>>(new Set());
@@ -81,7 +86,12 @@ export default function ColumnIncomingFeed() {
           </p>
         )}
         {issues.map((issue) => (
-          <DataCard key={issue.ingestion_id} issue={issue} isNew={newIds.has(issue.ingestion_id)} />
+          <DataCard
+            key={issue.ingestion_id}
+            issue={issue}
+            isNew={newIds.has(issue.ingestion_id)}
+            onClick={issue.status === 'pending' && issue.source_channel === 'telegram' ? () => onOpenDialog(issue) : undefined}
+          />
         ))}
       </div>
     </div>

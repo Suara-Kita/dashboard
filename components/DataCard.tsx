@@ -6,6 +6,7 @@ import type { Issue } from "@/lib/types";
 interface DataCardProps {
   issue: Issue;
   isNew?: boolean;
+  onClick?: () => void;
 }
 
 function urgencyColor(urgency: string): string {
@@ -32,15 +33,16 @@ function sourceLabel(issue: Issue): string {
   return issue.source_channel.toUpperCase();
 }
 
-export default function DataCard({ issue, isNew }: DataCardProps) {
+export default function DataCard({ issue, isNew, onClick }: DataCardProps) {
   const [hovered, setHovered] = useState(false);
   const color = urgencyColor(issue.urgency);
   const bgColor = `var(--color-${color})`;
   const borderOpacity = hovered ? 0.6 : 0.3;
+  const isClickable = onClick != null && issue.status === 'pending';
 
   return (
     <div
-      className={`p-2 glass-panel relative overflow-hidden flex flex-col gap-2 transition-colors cursor-pointer group ${isNew ? 'animate-enter' : ''}`}
+      className={`p-2 glass-panel relative overflow-hidden flex flex-col gap-2 transition-colors ${isClickable ? 'cursor-pointer' : ''} group ${isNew ? 'animate-enter' : ''}`}
       style={{
         backgroundColor: `color-mix(in srgb, ${bgColor} ${hovered ? 20 : 10}%, transparent)`,
         borderColor: `color-mix(in srgb, ${bgColor} ${borderOpacity * 100}%, transparent)`,
@@ -50,6 +52,7 @@ export default function DataCard({ issue, isNew }: DataCardProps) {
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={isClickable ? onClick : undefined}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
       <div className="flex justify-between items-start relative z-10">

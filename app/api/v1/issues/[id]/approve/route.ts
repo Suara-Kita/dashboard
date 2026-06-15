@@ -5,18 +5,21 @@ import { redis } from '@/lib/redis';
 export const dynamic = 'force-dynamic';
 
 export async function POST(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
+    const body = await request.json().catch(() => ({})) as { text?: string };
+    const customText = body.text?.trim();
 
     const rows = await sql(
       `UPDATE interactions
        SET status = 'approved', approved_at = NOW()
        WHERE ingestion_id = $1 AND status = 'pending'
        RETURNING ingestion_id, source_channel, raw_text, cleaned_summary,
-                 primary_category, intent_type, scope, urgency, voter_sentiment`,
+                 primary_category, intent_type, scope, urgency, voter_sentiment,
+                 response_id`,
       [id],
     );
 
@@ -30,21 +33,19 @@ export async function POST(
     const issue = rows[0] as Record<string, unknown>;
 
     try {
-      const payload = JSON.stringify({
-        ingestion_id: issue.ingestion_id,
-        source_channel: issue.source_channel,
-        raw_text: issue.raw_text,
-        cleaned_summary: issue.cleaned_summary,
-        primary_category: issue.primary_category,
-        intent_type: issue.intent_type,
-        scope: issue.scope,
-        urgency: issue.urgency,
-        voter_sentiment: issue.voter_sentiment,
-        approved_at: new Date().toISOString(),
-      });
-      await redis.lpush('queue:approved_actions', payload);
+      if (issue.source_channel === 'telegram') {
+        const payload = JSON.stringify({
+          ingestion_id: issue.ingestion_id,
+          response_id: issue.response_id,
+          response: customText || issue.cleaned_summary,
+          primary_category: issue.primary_category,
+          urgency: issue.urgency,
+          approved_at: new Date().toISOString(),
+        });
+        await redis.lpush('dispatch_telegram_queue', payload);
+      }
     } catch {
-      console.warn('Redis unavailable, approved action not enqueued');
+      console.warn('Redis unavailable, dispatch not enqueued');
     }
 
     return NextResponse.json({ approved: true, ingestion_id: id });
