@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         i.ingestion_id, i.source_channel, i.raw_text, i.cleaned_summary,
         i.primary_category, i.intent_type, i.scope, i.urgency,
         i.voter_sentiment, i.status, i.raw_language, i.rejection_reason,
-        i.ingested_at, i.processed_at,
+        i.ingested_at, i.processed_at, i.constituency,
         vp.client_identifier, vp.display_name, vp.inferred_constituency
       FROM interactions i
       LEFT JOIN voter_profiles vp ON i.voter_profile_id = vp.id
@@ -54,6 +54,7 @@ export async function GET(request: NextRequest) {
       source_channel: r.source_channel as string,
       raw_text: r.raw_text as string,
       cleaned_summary: r.cleaned_summary as string,
+      constituency: r.constituency as string | null,
       primary_category: r.primary_category as string,
       intent_type: r.intent_type as string,
       scope: r.scope as string,

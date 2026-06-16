@@ -80,6 +80,11 @@ export default function DataCard({ issue, isNew, onClick }: DataCardProps) {
         >
           {(issue.urgency ?? "unknown").toUpperCase()}
         </span>
+        {issue.constituency && (
+          <span className="px-1 bg-surface-container-highest text-[8px] text-on-surface-variant border border-outline-variant rounded">
+            {issue.constituency}
+          </span>
+        )}
         <span className="px-1 bg-surface-container-highest text-[8px] text-on-surface-variant border border-outline-variant rounded">
           {sourceLabel(issue)}
         </span>

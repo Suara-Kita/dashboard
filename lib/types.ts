@@ -18,6 +18,7 @@ export interface Issue {
   source_channel: string;
   raw_text: string;
   cleaned_summary: string;
+  constituency: string | null;
   primary_category: string;
   intent_type: string;
   scope: string;
