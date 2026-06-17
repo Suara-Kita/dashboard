@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const urgency = searchParams.get('urgency');
     const scope = searchParams.get('scope');
+    const sort = searchParams.get('sort') || 'ingested_at';
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
     const perPage = Math.min(100, Math.max(1, parseInt(searchParams.get('per_page') || '20', 10)));
 
@@ -39,12 +40,12 @@ export async function GET(request: NextRequest) {
         i.ingestion_id, i.source_channel, i.raw_text, i.cleaned_summary,
         i.primary_category, i.intent_type, i.scope, i.urgency,
         i.voter_sentiment, i.status, i.raw_language, i.rejection_reason,
-        i.ingested_at, i.processed_at, i.constituency,
+        i.ingested_at, i.processed_at, i.constituency, i.response_text, i.dispatched_at,
         vp.client_identifier, vp.display_name, vp.inferred_constituency
       FROM interactions i
       LEFT JOIN voter_profiles vp ON i.voter_profile_id = vp.id
       ${where}
-      ORDER BY i.ingested_at DESC
+      ORDER BY ${sort === 'dispatched_at' ? 'i.dispatched_at DESC NULLS LAST, i.ingested_at DESC' : 'i.ingested_at DESC'}
       LIMIT $${limitIdx} OFFSET $${offsetIdx}`,
       [...params, perPage, offset],
     );
@@ -63,6 +64,8 @@ export async function GET(request: NextRequest) {
       status: r.status as string,
       raw_language: r.raw_language as string,
       rejection_reason: r.rejection_reason as string | null,
+      response_text: r.response_text as string | null,
+      dispatched_at: r.dispatched_at as string | null,
       ingested_at: r.ingested_at as string,
       processed_at: r.processed_at as string | null,
       voter: r.client_identifier

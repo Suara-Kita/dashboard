@@ -27,6 +27,8 @@ export interface Issue {
   status: string;
   raw_language: string;
   rejection_reason: string | null;
+  response_text: string | null;
+  dispatched_at: string | null;
   ingested_at: string;
   processed_at: string | null;
   voter: {
@@ -34,6 +36,13 @@ export interface Issue {
     display_name: string | null;
     inferred_constituency: string | null;
   } | null;
+}
+
+export interface ColumnFeedConfig {
+  id: string;
+  title: string;
+  statusFilter: string;
+  visible: boolean;
 }
 
 export interface PaginatedResponse<T> {

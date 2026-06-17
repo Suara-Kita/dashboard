@@ -12,11 +12,15 @@ interface ApproveDialogProps {
 
 export default function ApproveDialog({ issue, cache, onClose, onApproved }: ApproveDialogProps) {
   const [text, setText] = useState('');
-  const [loading, setLoading] = useState(!cache.has(issue.ingestion_id));
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [approving, setApproving] = useState(false);
 
+  const isReadOnly = issue.status === 'dispatched';
+
   const loadGenerated = useCallback(async () => {
+    if (isReadOnly) return;
+
     const cached = cache.get(issue.ingestion_id);
     if (cached) {
       setText(cached);
@@ -40,11 +44,11 @@ export default function ApproveDialog({ issue, cache, onClose, onApproved }: App
     } finally {
       setLoading(false);
     }
-  }, [issue.ingestion_id, cache]);
+  }, [issue.ingestion_id, cache, isReadOnly]);
 
   useEffect(() => {
-    loadGenerated();
-  }, [loadGenerated]);
+    if (!isReadOnly) loadGenerated();
+  }, [loadGenerated, isReadOnly]);
 
   const handleTextChange = (value: string) => {
     setText(value);
@@ -73,14 +77,19 @@ export default function ApproveDialog({ issue, cache, onClose, onApproved }: App
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
       <div className="w-[min(90vw,720px)] max-h-[85vh] glass-panel border border-outline-variant rounded-lg flex flex-col overflow-hidden">
         <div className="p-4 border-b border-outline-variant flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-primary-container">rate_review</span>
+            <span className="material-symbols-outlined text-primary-container">
+              {isReadOnly ? 'visibility' : 'rate_review'}
+            </span>
             <div>
               <h2 className="font-section-header text-section-header text-primary-fixed-dim uppercase">
-                Approve Response
+                {isReadOnly ? 'View Response' : 'Approve Response'}
               </h2>
               <p className="text-micro-metric text-on-surface-variant">
                 {issue.primary_category} &middot; {issue.urgency.toUpperCase()}
@@ -104,7 +113,30 @@ export default function ApproveDialog({ issue, cache, onClose, onApproved }: App
             </p>
           </div>
 
-          {loading && (
+          {isReadOnly && issue.response_text && (
+            <div className="bg-primary-container/10 border border-primary-container/30 rounded p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="material-symbols-outlined text-sm text-primary-container">check_circle</span>
+                <p className="text-micro-metric text-primary-container uppercase font-bold">Response sent</p>
+                {issue.dispatched_at && (
+                  <span className="text-micro-metric text-on-surface-variant ml-auto">
+                    {new Date(issue.dispatched_at).toLocaleString()}
+                  </span>
+                )}
+              </div>
+              <p className="text-telemetry-data text-on-surface text-sm whitespace-pre-wrap">
+                {issue.response_text}
+              </p>
+            </div>
+          )}
+
+          {isReadOnly && !issue.response_text && (
+            <div className="bg-surface-container-lowest border border-outline-variant/30 rounded p-3">
+              <p className="text-micro-metric text-on-surface-variant">No response text recorded</p>
+            </div>
+          )}
+
+          {!isReadOnly && loading && (
             <div className="flex items-center justify-center py-8">
               <span className="text-micro-metric text-on-surface-variant animate-pulse">
                 Generating response...
@@ -112,13 +144,13 @@ export default function ApproveDialog({ issue, cache, onClose, onApproved }: App
             </div>
           )}
 
-          {error && (
+          {!isReadOnly && error && (
             <div className="bg-error/10 border border-error/30 rounded p-3">
               <p className="text-micro-metric text-error">{error}</p>
             </div>
           )}
 
-          {!loading && (
+          {!isReadOnly && !loading && (
             <textarea
               value={text}
               onChange={(e) => handleTextChange(e.target.value)}
@@ -134,16 +166,18 @@ export default function ApproveDialog({ issue, cache, onClose, onApproved }: App
             className="px-4 py-2 text-micro-metric text-on-surface-variant hover:text-on-surface transition-colors uppercase"
             type="button"
           >
-            Cancel
+            {isReadOnly ? 'Close' : 'Cancel'}
           </button>
-          <button
-            onClick={handleApprove}
-            disabled={loading || approving || !text.trim()}
-            className="px-4 py-2 bg-primary-container text-on-primary-fixed text-micro-metric font-bold uppercase rounded hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
-            type="button"
-          >
-            {approving ? 'Approving...' : 'Approve & Send'}
-          </button>
+          {!isReadOnly && (
+            <button
+              onClick={handleApprove}
+              disabled={loading || approving || !text.trim()}
+              className="px-4 py-2 bg-primary-container text-on-primary-fixed text-micro-metric font-bold uppercase rounded hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+              type="button"
+            >
+              {approving ? 'Approving...' : 'Approve & Send'}
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -13,14 +13,16 @@ export async function POST(
     const body = await request.json().catch(() => ({})) as { text?: string };
     const customText = body.text?.trim();
 
+    const responseText = customText || '';
+
     const rows = await sql(
       `UPDATE interactions
-       SET status = 'approved', approved_at = NOW()
+       SET status = 'approved', approved_at = NOW(), response_text = $2
        WHERE ingestion_id = $1 AND status = 'pending'
        RETURNING ingestion_id, source_channel, raw_text, cleaned_summary,
                  primary_category, intent_type, scope, urgency, voter_sentiment,
                  response_id`,
-      [id],
+      [id, responseText],
     );
 
     if (rows.length === 0) {

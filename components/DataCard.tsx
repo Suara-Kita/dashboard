@@ -38,11 +38,11 @@ export default function DataCard({ issue, isNew, onClick }: DataCardProps) {
   const color = urgencyColor(issue.urgency);
   const bgColor = `var(--color-${color})`;
   const borderOpacity = hovered ? 0.6 : 0.3;
-  const isClickable = onClick != null && issue.status === 'pending';
+  const isClickable = onClick != null && (issue.status === "pending" || issue.status === "dispatched");
 
   return (
     <div
-      className={`p-2 glass-panel relative overflow-hidden flex flex-col gap-2 transition-colors ${isClickable ? 'cursor-pointer' : ''} group ${isNew ? 'animate-enter' : ''}`}
+      className={`p-2 glass-panel relative overflow-hidden flex flex-col gap-2 transition-colors ${isClickable ? "cursor-pointer" : ""} group ${isNew ? "animate-enter" : ""}`}
       style={{
         backgroundColor: `color-mix(in srgb, ${bgColor} ${hovered ? 20 : 10}%, transparent)`,
         borderColor: `color-mix(in srgb, ${bgColor} ${borderOpacity * 100}%, transparent)`,

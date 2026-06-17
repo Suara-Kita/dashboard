@@ -32,14 +32,6 @@ export default function RootLayout({
           </div>
         </header>
         {children}
-        <footer className="fixed bottom-0 left-0 w-full z-50 p-md flex items-center bg-gradient-to-t from-background to-transparent pointer-events-none p-2">
-          <button
-            type="button"
-            className="pointer-events-auto bg-primary-container/20 border border-primary-container text-primary-container font-bold text-xs px-md p-2 rounded active:scale-95 transition-transform uppercase flex items-center gap-sm"
-          >
-            <span className="material-symbols-outlined text-sm">settings</span>
-          </button>
-        </footer>
       </body>
     </html>
   );

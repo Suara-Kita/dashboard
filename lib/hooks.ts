@@ -10,7 +10,7 @@ interface DashboardData {
   error: string | null;
 }
 
-export function useDashboardData(): DashboardData {
+export function useDashboardData(statusFilter?: string, sort?: string): DashboardData {
   const [data, setData] = useState<DashboardData>({
     metrics: null,
     issues: [],
@@ -21,11 +21,15 @@ export function useDashboardData(): DashboardData {
   useEffect(() => {
     let cancelled = false;
 
+    const params = new URLSearchParams({ per_page: '50' });
+    if (statusFilter) params.set('status', statusFilter);
+    if (sort) params.set('sort', sort);
+
     async function fetchData() {
       try {
         const [metricsRes, issuesRes] = await Promise.all([
           fetch('/api/v1/dashboard/metrics'),
-          fetch('/api/v1/issues?per_page=20'),
+          fetch(`/api/v1/issues?${params.toString()}`),
         ]);
 
         if (!metricsRes.ok || !issuesRes.ok) {

@@ -1,100 +1,100 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
-import maplibregl from 'maplibre-gl';
-import CyberMap from './CyberMap';
-import PEMANIS from '@/data/pemanis';
-import KEMELAH from '@/data/kemelah';
+import { useCallback } from "react";
+import maplibregl from "maplibre-gl";
+import CyberMap from "./CyberMap";
+import PEMANIS from "@/data/pemanis";
+import KEMELAH from "@/data/kemelah";
 
 export default function ColumnMap() {
   const handleMapLoad = useCallback((map: maplibregl.Map) => {
     // Pemanis boundary (cyan)
-    map.addSource('pemanis', {
-      type: 'geojson',
+    map.addSource("pemanis", {
+      type: "geojson",
       data: PEMANIS,
     });
 
     map.addLayer({
-      id: 'pemanis-fill',
-      type: 'fill',
-      source: 'pemanis',
+      id: "pemanis-fill",
+      type: "fill",
+      source: "pemanis",
       paint: {
-        'fill-color': '#00f0ff',
-        'fill-opacity': 0.08,
+        "fill-color": "#eddb39",
+        "fill-opacity": 0.2,
       },
     });
 
     map.addLayer({
-      id: 'pemanis-outline',
-      type: 'line',
-      source: 'pemanis',
+      id: "pemanis-outline",
+      type: "line",
+      source: "pemanis",
       paint: {
-        'line-color': '#00f0ff',
-        'line-width': 2,
-        'line-opacity': 0.6,
+        "line-color": "#00f0ff",
+        "line-width": 2,
+        "line-opacity": 0.6,
       },
     });
 
     // Kemelah boundary (teal)
-    map.addSource('kemelah', {
-      type: 'geojson',
+    map.addSource("kemelah", {
+      type: "geojson",
       data: KEMELAH,
     });
 
     map.addLayer({
-      id: 'kemelah-fill',
-      type: 'fill',
-      source: 'kemelah',
+      id: "kemelah-fill",
+      type: "fill",
+      source: "kemelah",
       paint: {
-        'fill-color': '#00a3a3',
-        'fill-opacity': 0.08,
+        "fill-color": "#80a63a",
+        "fill-opacity": 0.6,
       },
     });
 
     map.addLayer({
-      id: 'kemelah-outline',
-      type: 'line',
-      source: 'kemelah',
+      id: "kemelah-outline",
+      type: "line",
+      source: "kemelah",
       paint: {
-        'line-color': '#00a3a3',
-        'line-width': 2,
-        'line-opacity': 0.6,
+        "line-color": "#00a3a3",
+        "line-width": 2,
+        "line-opacity": 0.6,
       },
     });
 
     // Segamat glow marker
-    map.addSource('segamat', {
-      type: 'geojson',
+    map.addSource("segamat", {
+      type: "geojson",
       data: {
-        type: 'Feature',
+        type: "Feature",
         geometry: {
-          type: 'Point',
+          type: "Point",
           coordinates: [102.81672873138913, 2.520758287960639],
         },
-        properties: { name: 'Segamat, Johor' },
+        properties: { name: "Segamat, Johor" },
       },
     });
 
     map.addLayer({
-      id: 'segamat-glow',
-      type: 'circle',
-      source: 'segamat',
+      id: "segamat-glow",
+      type: "circle",
+      source: "segamat",
       paint: {
-        'circle-radius': 35,
-        'circle-color': '#00ff41',
-        'circle-blur': 0.85,
-        'circle-opacity': 0.5,
+        "circle-radius": 35,
+        "circle-color": "#00ff41",
+        "circle-blur": 0.85,
+        "circle-opacity": 0.5,
       },
     });
 
     map.addLayer({
-      id: 'segamat-core',
-      type: 'circle',
-      source: 'segamat',
+      id: "segamat-core",
+      type: "circle",
+      source: "segamat",
       paint: {
-        'circle-radius': 6,
-        'circle-color': '#00ff41',
-        'circle-opacity': 1,
+        "circle-radius": 6,
+        "circle-color": "#00ff41",
+        "circle-opacity": 1,
       },
     });
 
@@ -117,7 +117,9 @@ export default function ColumnMap() {
       />
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(circle, transparent 40%, black 100%)' }}
+        style={{
+          background: "radial-gradient(circle, transparent 40%, black 100%)",
+        }}
       />
     </div>
   );
