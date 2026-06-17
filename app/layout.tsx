@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import TelemetryStats from "@/components/TelemetryStats";
 
 export const metadata: Metadata = {
   title: "ELECTION COMMAND | TACTICAL OS",
@@ -30,6 +31,7 @@ export default function RootLayout({
               ELECTION COMMAND
             </span>
           </div>
+          <TelemetryStats />
         </header>
         {children}
       </body>
