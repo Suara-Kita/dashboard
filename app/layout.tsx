@@ -23,12 +23,15 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body suppressHydrationWarning className="bg-background text-on-background font-command-label selection:bg-primary-container selection:text-on-primary-fixed scanlines overflow-hidden h-screen">
+      <body
+        suppressHydrationWarning
+        className="bg-background text-on-background font-command-label selection:bg-primary-container selection:text-on-primary-fixed scanlines overflow-hidden h-screen"
+      >
         <div className="scanline-sweep" />
         <header className="fixed top-0 p-2 w-full z-50 flex justify-between items-center px-md h-16 bg-transparent">
           <div className="flex items-center px-md">
             <span className="font-display-header text-lg text-primary-container tracking-widest uppercase">
-              ELECTION COMMAND
+              PROJECT SYNCHRO
             </span>
           </div>
           <TelemetryStats />
