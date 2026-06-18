@@ -1,67 +1,29 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import type { Issue } from '@/lib/types';
 
 interface ApproveDialogProps {
   issue: Issue;
-  cache: Map<string, string>;
   onClose: () => void;
   onApproved: () => void;
 }
 
-export default function ApproveDialog({ issue, cache, onClose, onApproved }: ApproveDialogProps) {
+export default function ApproveDialog({ issue, onClose, onApproved }: ApproveDialogProps) {
   const [text, setText] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [approving, setApproving] = useState(false);
 
   const isReadOnly = issue.status === 'dispatched';
 
-  const loadGenerated = useCallback(async () => {
-    if (isReadOnly) return;
-
-    const cached = cache.get(issue.ingestion_id);
-    if (cached) {
-      setText(cached);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const res = await fetch(`/api/v1/issues/${issue.ingestion_id}/generate`);
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: 'Failed to generate' }));
-        throw new Error(err.error || 'Failed to generate');
-      }
-      const data = await res.json() as { text: string };
-      cache.set(issue.ingestion_id, data.text);
-      setText(data.text);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }, [issue.ingestion_id, cache, isReadOnly]);
-
-  useEffect(() => {
-    if (!isReadOnly) loadGenerated();
-  }, [loadGenerated, isReadOnly]);
-
-  const handleTextChange = (value: string) => {
-    setText(value);
-    cache.set(issue.ingestion_id, value);
-  };
-
   const handleApprove = async () => {
     setApproving(true);
+    setError(null);
     try {
       const res = await fetch(`/api/v1/issues/${issue.ingestion_id}/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, raw_language: issue.raw_language }),
       });
 
       if (!res.ok) {
@@ -113,6 +75,13 @@ export default function ApproveDialog({ issue, cache, onClose, onApproved }: App
             </p>
           </div>
 
+          <div className="bg-surface-container-lowest border border-outline-variant/30 rounded p-3">
+            <p className="text-micro-metric text-on-surface-variant uppercase mb-1">Summary</p>
+            <p className="text-telemetry-data text-on-surface text-sm">
+              {issue.cleaned_summary}
+            </p>
+          </div>
+
           {isReadOnly && issue.response_text && (
             <div className="bg-primary-container/10 border border-primary-container/30 rounded p-3">
               <div className="flex items-center gap-2 mb-1">
@@ -136,26 +105,18 @@ export default function ApproveDialog({ issue, cache, onClose, onApproved }: App
             </div>
           )}
 
-          {!isReadOnly && loading && (
-            <div className="flex items-center justify-center py-8">
-              <span className="text-micro-metric text-on-surface-variant animate-pulse">
-                Generating response...
-              </span>
-            </div>
-          )}
-
           {!isReadOnly && error && (
             <div className="bg-error/10 border border-error/30 rounded p-3">
               <p className="text-micro-metric text-error">{error}</p>
             </div>
           )}
 
-          {!isReadOnly && !loading && (
+          {!isReadOnly && (
             <textarea
               value={text}
-              onChange={(e) => handleTextChange(e.target.value)}
+              onChange={(e) => setText(e.target.value)}
               className="w-full flex-1 min-h-[120px] bg-surface-container border border-outline-variant rounded p-3 text-telemetry-data text-on-surface resize-none focus:outline-none focus:border-primary-container transition-colors"
-              placeholder="Response text..."
+              placeholder="Type your response..."
             />
           )}
         </div>
@@ -171,7 +132,7 @@ export default function ApproveDialog({ issue, cache, onClose, onApproved }: App
           {!isReadOnly && (
             <button
               onClick={handleApprove}
-              disabled={loading || approving || !text.trim()}
+              disabled={approving || !text.trim()}
               className="px-4 py-2 bg-primary-container text-on-primary-fixed text-micro-metric font-bold uppercase rounded hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
               type="button"
             >

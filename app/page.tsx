@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import BackgroundWrapper from "@/components/BackgroundWrapper";
 import ColumnMap from "@/components/ColumnMap";
 import ColumnFeed from "@/components/ColumnFeed";
@@ -28,7 +28,6 @@ export default function DashboardPage() {
   const [dialogIssue, setDialogIssue] = useState<Issue | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [columns, setColumns] = useState<ColumnFeedConfig[]>(DEFAULT_COLUMNS);
-  const responseCache = useRef<Map<string, string>>(new Map());
 
   const openDialog = useCallback((issue: Issue) => setDialogIssue(issue), []);
   const closeDialog = useCallback(() => setDialogIssue(null), []);
@@ -82,7 +81,6 @@ export default function DashboardPage() {
       {dialogIssue && (
         <ApproveDialog
           issue={dialogIssue}
-          cache={responseCache.current}
           onClose={closeDialog}
           onApproved={closeDialog}
         />

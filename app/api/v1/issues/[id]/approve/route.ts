@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query as sql } from '@/lib/db';
 import { redis } from '@/lib/redis';
+import { translateResponseText } from '@/lib/llm';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,10 +11,19 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const body = await request.json().catch(() => ({})) as { text?: string };
+    const body = await request.json().catch(() => ({})) as { text?: string; raw_language?: string };
     const customText = body.text?.trim();
+    const rawLanguage = body.raw_language;
 
-    const responseText = customText || '';
+    let responseText = customText || '';
+
+    if (rawLanguage && rawLanguage !== 'other' && customText) {
+      try {
+        responseText = await translateResponseText(customText, rawLanguage);
+      } catch {
+        console.warn('Translation failed, using original text');
+      }
+    }
 
     const rows = await sql(
       `UPDATE interactions
@@ -39,7 +49,7 @@ export async function POST(
         const payload = JSON.stringify({
           ingestion_id: issue.ingestion_id,
           response_id: issue.response_id,
-          response: customText || issue.cleaned_summary,
+          response: responseText,
           primary_category: issue.primary_category,
           urgency: issue.urgency,
           approved_at: new Date().toISOString(),
