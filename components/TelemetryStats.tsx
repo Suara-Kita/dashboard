@@ -14,18 +14,12 @@ interface ConstituencyStats {
   categories: CategoryItem[];
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  infrastructure: "Infrastructure",
-  social_welfare: "Welfare & Aid",
-  public_safety: "Public Safety",
-  education: "Education",
-  health: "Health",
-  economy_and_labor: "Economy & Labor",
-  environment: "Environment",
-  governance: "Governance",
-  housing: "Housing",
-  other: "Other",
-};
+function labelFromCategory(category: string): string {
+  return category
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 export default function TelemetryStats() {
   const [stats, setStats] = useState<ConstituencyStats>({
@@ -87,7 +81,7 @@ export default function TelemetryStats() {
         </div>
       </div>
 
-      <div className="fixed top-24 right-0 mt-3 mr-4 w-48 glass-panel border border-primary-container/30 rounded p-2 space-y-1 z-50 shadow-[0_0_15px_rgba(0,255,65,0.1)]">
+      <div className="fixed top-24 right-0 mt-3 mr-4 w-64 glass-panel border border-primary-container/30 rounded p-2 space-y-1 z-50 shadow-[0_0_15px_rgba(0,255,65,0.1)]">
         <div className="pb-1.5 mb-1.5 border-b border-primary-container/20">
           <span className="text-micro-metric font-bold text-primary-container uppercase tracking-widest">
             Metric Breakdown
@@ -99,7 +93,7 @@ export default function TelemetryStats() {
               key={item.category}
               className="flex justify-between text-[10px] text-on-surface/80 hover:bg-primary-container/10 px-1 py-0.5 rounded cursor-default"
             >
-              <span>{CATEGORY_LABELS[item.category] ?? item.category}</span>
+              <span>{labelFromCategory(item.category)}</span>
               <span className="text-primary-container">{item.count}</span>
             </div>
           ))}
