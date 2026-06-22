@@ -43,6 +43,7 @@ export interface ColumnFeedConfig {
   title: string;
   statusFilter: string;
   visible: boolean;
+  kind?: 'feed' | 'news';
 }
 
 export interface PaginatedResponse<T> {

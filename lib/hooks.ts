@@ -24,6 +24,7 @@ export function useDashboardData(statusFilter?: string, sort?: string): Dashboar
     const params = new URLSearchParams({ per_page: '50' });
     if (statusFilter) params.set('status', statusFilter);
     if (sort) params.set('sort', sort);
+    params.set('exclude_source_channel', 'news_crawler');
 
     async function fetchData() {
       try {
@@ -57,6 +58,35 @@ export function useDashboardData(statusFilter?: string, sort?: string): Dashboar
       cancelled = true;
       clearInterval(interval);
     };
+  }, []);
+
+  return data;
+}
+
+export function useNewsData(): { issues: Issue[]; loading: boolean; error: string | null } {
+  const [data, setData] = useState<{ issues: Issue[]; loading: boolean; error: string | null }>({
+    issues: [],
+    loading: true,
+    error: null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchData() {
+      try {
+        const res = await fetch('/api/v1/issues?source_channel=news_crawler&per_page=50');
+        if (!res.ok) throw new Error('Failed to fetch news');
+        const json = await res.json() as { data: Issue[] };
+        if (!cancelled) setData({ issues: json.data ?? [], loading: false, error: null });
+      } catch (err) {
+        if (!cancelled) setData({ issues: [], loading: false, error: (err as Error).message });
+      }
+    }
+
+    fetchData();
+    const interval = setInterval(fetchData, 30_000);
+    return () => { cancelled = true; clearInterval(interval); };
   }, []);
 
   return data;
