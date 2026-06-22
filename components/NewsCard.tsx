@@ -8,7 +8,6 @@ const FEED_LABELS: Record<string, string> = {
   sinarharian: "Sinar Harian",
   nst: "New Straits Times",
   fmt: "Free Malaysia Today",
-  tmi: "The Malaysian Insight",
   harakahdaily: "Harakahdaily",
 };
 
@@ -27,15 +26,15 @@ export default function NewsCard({ issue, isNew, onClick }: NewsCardProps) {
       className={`p-2 glass-panel relative overflow-hidden flex flex-col gap-2 rounded border transition-colors cursor-pointer ${isNew ? "animate-enter" : ""}`}
       onClick={onClick}
       style={{
-        backgroundColor: `color-mix(in srgb, var(--color-secondary-fixed-dim) ${isRelevant ? 12 : 6}%, transparent)`,
-        borderColor: `color-mix(in srgb, var(--color-secondary-fixed-dim) ${isRelevant ? 30 : 15}%, transparent)`,
+        backgroundColor: `color-mix(in srgb, #f97316 ${isRelevant ? 12 : 6}%, transparent)`,
+        borderColor: `color-mix(in srgb, #22c55e ${isRelevant ? 30 : 15}%, transparent)`,
         borderWidth: 1,
         borderStyle: "solid",
       }}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
       <div className="flex justify-between items-start relative z-10">
-        <span className="text-[9px] font-bold uppercase text-secondary-fixed-dim">
+        <span className="text-[9px] font-bold uppercase" style={{ color: '#f97316' }}>
           {outlet}
         </span>
         <span className="text-micro-metric text-on-surface-variant">
@@ -49,9 +48,9 @@ export default function NewsCard({ issue, isNew, onClick }: NewsCardProps) {
         {issue.primary_category && (
           <span className="px-1 text-[8px] font-bold border rounded"
             style={{
-              color: "var(--color-secondary-fixed-dim)",
-              backgroundColor: "color-mix(in srgb, var(--color-secondary-fixed-dim) 15%, transparent)",
-              borderColor: "color-mix(in srgb, var(--color-secondary-fixed-dim) 30%, transparent)",
+              color: "#f97316",
+              backgroundColor: "color-mix(in srgb, #f97316 15%, transparent)",
+              borderColor: "color-mix(in srgb, #f97316 30%, transparent)",
             }}
           >
             {issue.primary_category.toUpperCase()}
