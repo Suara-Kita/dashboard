@@ -28,8 +28,10 @@ function issueType(issue: Issue): string {
 }
 
 function sourceLabel(issue: Issue): string {
-  if (issue.voter?.client_identifier)
+  if (issue.source_channel === "telegram" && issue.voter?.client_identifier)
     return `TG:${issue.voter.client_identifier.slice(0, 10)}`;
+  if (issue.voter?.client_identifier)
+    return issue.voter.client_identifier.slice(0, 10).toUpperCase();
   return issue.source_channel.toUpperCase();
 }
 

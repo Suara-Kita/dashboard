@@ -9,6 +9,7 @@ export async function GET() {
          COUNT(*)::int AS count
        FROM interactions
        WHERE constituency IN ($1, $2)
+         AND source_channel != 'news_crawler'
        GROUP BY constituency`,
       ['P.141 Sekijang - N.03 Pemanis', 'P.141 Sekijang - N.04 Kemelah'],
     ),
@@ -16,6 +17,7 @@ export async function GET() {
       `SELECT primary_category, COUNT(*)::int AS count
        FROM interactions
        WHERE primary_category IS NOT NULL AND primary_category != ''
+         AND source_channel != 'news_crawler'
        GROUP BY primary_category
        ORDER BY count DESC`,
     ),

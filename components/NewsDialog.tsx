@@ -8,7 +8,6 @@ const FEED_LABELS: Record<string, string> = {
   sinarharian: 'Sinar Harian',
   nst: 'New Straits Times',
   fmt: 'Free Malaysia Today',
-  tmi: 'The Malaysian Insight',
   harakahdaily: 'Harakahdaily',
 };
 

@@ -40,7 +40,7 @@ export default function ColumnNews({ title, onOpenDialog }: ColumnNewsProps) {
   return (
     <div className="w-80 p-sm flex flex-col gap-sm glass-panel border border-outline-variant rounded-lg overflow-hidden border-glow opacity-50">
       <div className="p-md bg-surface-container-lowest border-b border-outline-variant p-2">
-        <h2 className="font-section-header text-section-header text-secondary-fixed-dim uppercase mb-md">
+        <h2 className="font-section-header text-section-header uppercase mb-md" style={{ color: '#f97316' }}>
           {title}
         </h2>
       </div>
