@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type { Issue } from '@/lib/types';
 
 const FEED_LABELS: Record<string, string> = {
@@ -25,9 +26,25 @@ function parseNewsContent(rawText: string): { body: string; url: string | null }
 interface NewsDialogProps {
   issue: Issue;
   onClose: () => void;
+  onMarkedToggle?: () => void;
 }
 
-export default function NewsDialog({ issue, onClose }: NewsDialogProps) {
+export default function NewsDialog({ issue, onClose, onMarkedToggle }: NewsDialogProps) {
+  const [marked, setMarked] = useState(issue.marked);
+
+  const handleToggleMark = async () => {
+    try {
+      const res = await fetch(`/api/v1/issues/${issue.ingestion_id}/mark`, { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json() as { marked: boolean };
+        setMarked(data.marked);
+        onMarkedToggle?.();
+      }
+    } catch {
+      // ignore
+    }
+  };
+
   const outlet = FEED_LABELS[issue.voter?.client_identifier ?? ''] ?? issue.voter?.client_identifier?.toUpperCase() ?? 'NEWS';
   const { body, url } = parseNewsContent(issue.raw_text);
   const isRelevant = issue.status !== 'noise';
@@ -84,13 +101,25 @@ export default function NewsDialog({ issue, onClose }: NewsDialogProps) {
         </div>
 
         <div className="p-4 border-t border-outline-variant flex items-center justify-between">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-micro-metric text-on-surface-variant hover:text-on-surface transition-colors uppercase"
-            type="button"
-          >
-            Close
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleToggleMark}
+              className={`px-4 py-2 text-micro-metric font-bold uppercase rounded transition-colors ${marked ? 'text-[#f97316]' : 'text-on-surface-variant hover:text-on-surface'}`}
+              type="button"
+            >
+              <span className="material-symbols-outlined text-sm align-middle mr-1">
+                {marked ? 'push_pin' : 'push_pin'}
+              </span>
+              {marked ? 'Pinned' : 'Pin'}
+            </button>
+            <button
+              onClick={onClose}
+              className="px-4 py-2 text-micro-metric text-on-surface-variant hover:text-on-surface transition-colors uppercase"
+              type="button"
+            >
+              Close
+            </button>
+          </div>
           {url && (
             <a
               href={url}

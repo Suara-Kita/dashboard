@@ -64,9 +64,16 @@ export default function DataCard({ issue, isNew, onClick }: DataCardProps) {
         >
           {issueType(issue)}
         </span>
-        <span className="text-micro-metric text-on-surface-variant">
-          {new Date(issue.ingested_at).toLocaleTimeString()}
-        </span>
+        <div className="flex items-center gap-1">
+          {issue.marked && (
+            <span className="material-symbols-outlined text-[10px]" style={{ color: '#f97316' }}>
+              push_pin
+            </span>
+          )}
+          <span className="text-micro-metric text-on-surface-variant">
+            {new Date(issue.ingested_at).toLocaleTimeString()}
+          </span>
+        </div>
       </div>
       <p className="text-telemetry-data text-on-surface font-bold leading-tight relative z-10">
         {issue.cleaned_summary || issue.raw_text}

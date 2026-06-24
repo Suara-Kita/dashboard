@@ -27,6 +27,9 @@ export async function GET(request: NextRequest) {
     if (scope) { conditions.push(`i.scope = $${idx++}`); params.push(scope); }
     if (sourceChannel) { conditions.push(`i.source_channel = $${idx++}`); params.push(sourceChannel); }
     if (excludeSourceChannel) { conditions.push(`i.source_channel != $${idx++}`); params.push(excludeSourceChannel); }
+    const marked = searchParams.get('marked');
+    if (marked === 'true') { conditions.push('i.marked = TRUE'); }
+    else if (marked === 'false') { conditions.push('i.marked = FALSE'); }
 
     const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
     const offset = (page - 1) * perPage;
@@ -44,7 +47,7 @@ export async function GET(request: NextRequest) {
         i.ingestion_id, i.source_channel, i.raw_text, i.cleaned_summary,
         i.primary_category, i.intent_type, i.scope, i.urgency,
         i.voter_sentiment, i.status, i.raw_language, i.rejection_reason,
-        i.ingested_at, i.processed_at, i.constituency, i.response_text, i.dispatched_at,
+        i.ingested_at, i.processed_at, i.constituency, i.response_text, i.dispatched_at, i.marked,
         vp.client_identifier, vp.display_name, vp.inferred_constituency
       FROM interactions i
       LEFT JOIN voter_profiles vp ON i.voter_profile_id = vp.id
@@ -69,6 +72,7 @@ export async function GET(request: NextRequest) {
       raw_language: r.raw_language as string,
       rejection_reason: r.rejection_reason as string | null,
       response_text: r.response_text as string | null,
+      marked: r.marked as boolean,
       dispatched_at: r.dispatched_at as string | null,
       ingested_at: r.ingested_at as string,
       processed_at: r.processed_at as string | null,

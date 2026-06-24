@@ -7,14 +7,29 @@ interface ApproveDialogProps {
   issue: Issue;
   onClose: () => void;
   onApproved: () => void;
+  onMarkedToggle?: () => void;
 }
 
-export default function ApproveDialog({ issue, onClose, onApproved }: ApproveDialogProps) {
+export default function ApproveDialog({ issue, onClose, onApproved, onMarkedToggle }: ApproveDialogProps) {
   const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [approving, setApproving] = useState(false);
+  const [marked, setMarked] = useState(issue.marked);
 
   const isReadOnly = issue.status === 'dispatched';
+
+  const handleToggleMark = async () => {
+    try {
+      const res = await fetch(`/api/v1/issues/${issue.ingestion_id}/mark`, { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json() as { marked: boolean };
+        setMarked(data.marked);
+        onMarkedToggle?.();
+      }
+    } catch {
+      // ignore
+    }
+  };
 
   const handleApprove = async () => {
     setApproving(true);
@@ -122,6 +137,16 @@ export default function ApproveDialog({ issue, onClose, onApproved }: ApproveDia
         </div>
 
         <div className="p-4 border-t border-outline-variant flex items-center justify-end gap-3">
+          <button
+            onClick={handleToggleMark}
+            className={`px-4 py-2 text-micro-metric font-bold uppercase rounded transition-colors ${marked ? 'text-[#f97316]' : 'text-on-surface-variant hover:text-on-surface'}`}
+            type="button"
+          >
+            <span className="material-symbols-outlined text-sm align-middle mr-1">
+              {marked ? 'push_pin' : 'push_pin'}
+            </span>
+            {marked ? 'Pinned' : 'Pin'}
+          </button>
           <button
             onClick={onClose}
             className="px-4 py-2 text-micro-metric text-on-surface-variant hover:text-on-surface transition-colors uppercase"

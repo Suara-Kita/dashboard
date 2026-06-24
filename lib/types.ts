@@ -28,6 +28,7 @@ export interface Issue {
   raw_language: string;
   rejection_reason: string | null;
   response_text: string | null;
+  marked: boolean;
   dispatched_at: string | null;
   ingested_at: string;
   processed_at: string | null;
@@ -43,7 +44,7 @@ export interface ColumnFeedConfig {
   title: string;
   statusFilter: string;
   visible: boolean;
-  kind?: 'feed' | 'news';
+  kind?: 'feed' | 'news' | 'marked';
 }
 
 export interface PaginatedResponse<T> {

@@ -5,6 +5,7 @@ import BackgroundWrapper from "@/components/BackgroundWrapper";
 import ColumnMap from "@/components/ColumnMap";
 import ColumnFeed from "@/components/ColumnFeed";
 import ColumnNews from "@/components/ColumnNews";
+import ColumnMarked from "@/components/ColumnMarked";
 import ColumnPdm from "@/components/ColumnPdm";
 import SettingsDialog from "@/components/SettingsDialog";
 import ApproveDialog from "@/components/ApproveDialog";
@@ -35,6 +36,13 @@ const DEFAULT_COLUMNS: ColumnFeedConfig[] = [
     kind: "news",
   },
   {
+    id: "marked",
+    title: "Marked Feed",
+    statusFilter: "",
+    visible: true,
+    kind: "marked",
+  },
+  {
     id: "pdm",
     title: "PDM Directory",
     statusFilter: "",
@@ -48,6 +56,7 @@ export default function DashboardPage() {
   const [showSettings, setShowSettings] = useState(false);
   const [columns, setColumns] = useState<ColumnFeedConfig[]>(DEFAULT_COLUMNS);
   const [markerStyle, setMarkerStyle] = useState<"green" | "saluran">("green");
+  const [markedRefreshKey, setMarkedRefreshKey] = useState(0);
 
   const openDialog = useCallback((issue: Issue) => setDialogIssue(issue), []);
   const closeDialog = useCallback(() => setDialogIssue(null), []);
@@ -76,6 +85,14 @@ export default function DashboardPage() {
                 <ColumnPdm key={col.id} />
               ) : col.kind === "news" ? (
                 <ColumnNews key={col.id} title={col.title} onOpenDialog={openNewsDialog} />
+              ) : col.kind === "marked" ? (
+                <ColumnMarked
+                  key={col.id}
+                  title={col.title}
+                  refreshKey={markedRefreshKey}
+                  onOpenDialog={openDialog}
+                  onOpenNewsDialog={openNewsDialog}
+                />
               ) : (
                 <ColumnFeed
                   key={col.id}
@@ -113,6 +130,7 @@ export default function DashboardPage() {
           issue={dialogIssue}
           onClose={closeDialog}
           onApproved={closeDialog}
+          onMarkedToggle={() => setMarkedRefreshKey(k => k + 1)}
         />
       )}
 
@@ -120,6 +138,7 @@ export default function DashboardPage() {
         <NewsDialog
           issue={newsDialogIssue}
           onClose={closeNewsDialog}
+          onMarkedToggle={() => setMarkedRefreshKey(k => k + 1)}
         />
       )}
     </>
