@@ -5,6 +5,7 @@ import BackgroundWrapper from "@/components/BackgroundWrapper";
 import ColumnMap from "@/components/ColumnMap";
 import ColumnFeed from "@/components/ColumnFeed";
 import ColumnNews from "@/components/ColumnNews";
+import ColumnPdm from "@/components/ColumnPdm";
 import SettingsDialog from "@/components/SettingsDialog";
 import ApproveDialog from "@/components/ApproveDialog";
 import NewsDialog from "@/components/NewsDialog";
@@ -32,6 +33,12 @@ const DEFAULT_COLUMNS: ColumnFeedConfig[] = [
     statusFilter: "",
     visible: true,
     kind: "news",
+  },
+  {
+    id: "pdm",
+    title: "PDM Directory",
+    statusFilter: "",
+    visible: true,
   },
 ];
 
@@ -64,7 +71,9 @@ export default function DashboardPage() {
           {columns
             .filter((c) => c.visible)
             .map((col) =>
-              col.kind === "news" ? (
+              col.id === "pdm" ? (
+                <ColumnPdm key={col.id} />
+              ) : col.kind === "news" ? (
                 <ColumnNews key={col.id} title={col.title} onOpenDialog={openNewsDialog} />
               ) : (
                 <ColumnFeed
@@ -73,7 +82,7 @@ export default function DashboardPage() {
                   statusFilter={col.statusFilter}
                   onOpenDialog={openDialog}
                 />
-              )
+              ),
             )}
         </div>
       </main>

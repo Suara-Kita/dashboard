@@ -5,6 +5,39 @@ import maplibregl from "maplibre-gl";
 import CyberMap from "./CyberMap";
 import PEMANIS from "@/data/pemanis";
 import KEMELAH from "@/data/kemelah";
+import PDM from "@/data/pdm";
+import PUSAT from "@/data/pusat_daerah_mengundi";
+
+function addGlowLayer(
+  map: maplibregl.Map,
+  id: string,
+  source: string,
+  color: string,
+  radius = 28,
+) {
+  map.addLayer({
+    id: `${id}-glow`,
+    type: "circle",
+    source,
+    paint: {
+      "circle-radius": radius,
+      "circle-color": color,
+      "circle-blur": 0.85,
+      "circle-opacity": 0.4,
+    },
+  });
+
+  map.addLayer({
+    id: `${id}-core`,
+    type: "circle",
+    source,
+    paint: {
+      "circle-radius": 5,
+      "circle-color": color,
+      "circle-opacity": 1,
+    },
+  });
+}
 
 export default function ColumnMap() {
   const handleMapLoad = useCallback((map: maplibregl.Map) => {
@@ -62,41 +95,19 @@ export default function ColumnMap() {
       },
     });
 
-    // Segamat glow marker
-    map.addSource("segamat", {
+    // PDM points (yellow)
+    map.addSource("pdm", {
       type: "geojson",
-      data: {
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [102.81672873138913, 2.520758287960639],
-        },
-        properties: { name: "Segamat, Johor" },
-      },
+      data: PDM,
     });
+    addGlowLayer(map, "pdm", "pdm", "#ffd700");
 
-    map.addLayer({
-      id: "segamat-glow",
-      type: "circle",
-      source: "segamat",
-      paint: {
-        "circle-radius": 35,
-        "circle-color": "#00ff41",
-        "circle-blur": 0.85,
-        "circle-opacity": 0.5,
-      },
+    // Pusat Daerah Mengundi points (green)
+    map.addSource("pusat", {
+      type: "geojson",
+      data: PUSAT,
     });
-
-    map.addLayer({
-      id: "segamat-core",
-      type: "circle",
-      source: "segamat",
-      paint: {
-        "circle-radius": 6,
-        "circle-color": "#00ff41",
-        "circle-opacity": 1,
-      },
-    });
+    addGlowLayer(map, "pusat", "pusat", "#00ff41");
 
     // Zoom to combined Pemanis + Kemelah bounds
     map.fitBounds(
