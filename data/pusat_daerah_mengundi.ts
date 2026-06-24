@@ -17,6 +17,7 @@ const features = (raw.sekijang as any[])
     properties: {
       kod_pdm: e.kod_pdm,
       pusat_daerah_mengundi: e.pusat_daerah_mengundi,
+      saluran: e.saluran,
     },
   }));
 

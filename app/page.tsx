@@ -47,6 +47,7 @@ export default function DashboardPage() {
   const [newsDialogIssue, setNewsDialogIssue] = useState<Issue | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [columns, setColumns] = useState<ColumnFeedConfig[]>(DEFAULT_COLUMNS);
+  const [markerStyle, setMarkerStyle] = useState<"green" | "saluran">("green");
 
   const openDialog = useCallback((issue: Issue) => setDialogIssue(issue), []);
   const closeDialog = useCallback(() => setDialogIssue(null), []);
@@ -64,7 +65,7 @@ export default function DashboardPage() {
   return (
     <>
       <BackgroundWrapper>
-        <ColumnMap />
+        <ColumnMap markerStyle={markerStyle} />
       </BackgroundWrapper>
       <main className="fixed inset-0 z-10 flex flex-col gap-0 p-2">
         <div className="w-full h-full flex p-lg gap-4 overflow-hidden pt-16">
@@ -102,6 +103,8 @@ export default function DashboardPage() {
           columns={columns}
           onToggle={toggleColumn}
           onClose={() => setShowSettings(false)}
+          markerStyle={markerStyle}
+          onMarkerStyleChange={setMarkerStyle}
         />
       )}
 

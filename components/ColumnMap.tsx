@@ -1,45 +1,27 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import maplibregl from "maplibre-gl";
 import CyberMap from "./CyberMap";
 import PEMANIS from "@/data/pemanis";
 import KEMELAH from "@/data/kemelah";
-import PDM from "@/data/pdm";
 import PUSAT from "@/data/pusat_daerah_mengundi";
 
-function addGlowLayer(
-  map: maplibregl.Map,
-  id: string,
-  source: string,
-  color: string,
-  radius = 28,
-) {
-  map.addLayer({
-    id: `${id}-glow`,
-    type: "circle",
-    source,
-    paint: {
-      "circle-radius": radius,
-      "circle-color": color,
-      "circle-blur": 0.85,
-      "circle-opacity": 0.4,
-    },
-  });
-
-  map.addLayer({
-    id: `${id}-core`,
-    type: "circle",
-    source,
-    paint: {
-      "circle-radius": 5,
-      "circle-color": color,
-      "circle-opacity": 1,
-    },
-  });
+interface ColumnMapProps {
+  markerStyle: "green" | "saluran";
 }
 
-export default function ColumnMap() {
+const SALURAN_EXPRESSION = [
+  "interpolate",
+  ["linear"],
+  ["get", "saluran"],
+  1, "#00ff41",
+  7, "#ff0000",
+] as unknown as maplibregl.ExpressionSpecification;
+
+export default function ColumnMap({ markerStyle }: ColumnMapProps) {
+  const mapRef = useRef<maplibregl.Map | null>(null);
+
   const handleMapLoad = useCallback((map: maplibregl.Map) => {
     // Pemanis boundary (cyan)
     map.addSource("pemanis", {
@@ -95,19 +77,35 @@ export default function ColumnMap() {
       },
     });
 
-    // PDM points (yellow)
-    map.addSource("pdm", {
-      type: "geojson",
-      data: PDM,
-    });
-    addGlowLayer(map, "pdm", "pdm", "#ffd700");
-
-    // Pusat Daerah Mengundi points (green)
     map.addSource("pusat", {
       type: "geojson",
       data: PUSAT,
     });
-    addGlowLayer(map, "pusat", "pusat", "#00ff41");
+
+    map.addLayer({
+      id: "pusat-glow",
+      type: "circle",
+      source: "pusat",
+      paint: {
+        "circle-radius": 28,
+        "circle-color": "#00ff41",
+        "circle-blur": 0.85,
+        "circle-opacity": 0.4,
+      },
+    });
+
+    map.addLayer({
+      id: "pusat-core",
+      type: "circle",
+      source: "pusat",
+      paint: {
+        "circle-radius": 5,
+        "circle-color": "#00ff41",
+        "circle-opacity": 1,
+      },
+    });
+
+    mapRef.current = map;
 
     // Zoom to combined Pemanis + Kemelah bounds
     map.fitBounds(
@@ -118,6 +116,19 @@ export default function ColumnMap() {
       { padding: 50 },
     );
   }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (!map.getLayer("pusat-glow") || !map.getLayer("pusat-core")) return;
+
+    const color = markerStyle === "green"
+      ? "#00ff41"
+      : SALURAN_EXPRESSION;
+
+    map.setPaintProperty("pusat-glow", "circle-color", color);
+    map.setPaintProperty("pusat-core", "circle-color", color);
+  }, [markerStyle]);
 
   return (
     <div className="w-full h-full">
