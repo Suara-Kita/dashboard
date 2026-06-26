@@ -24,23 +24,25 @@ export default function ColumnFeed({
   useEffect(() => {
     const currentIds = new Set(issues.map((i) => i.ingestion_id));
     const fresh = [...currentIds].filter((id) => !prevIdsRef.current.has(id));
+    prevIdsRef.current = currentIds;
 
-    if (fresh.length > 0) {
+    if (fresh.length === 0) return;
+
+    setNewIds((prev) => {
+      const next = new Set(prev);
+      fresh.forEach((id) => next.add(id));
+      return next;
+    });
+
+    const timer = setTimeout(() => {
       setNewIds((prev) => {
         const next = new Set(prev);
-        fresh.forEach((id) => next.add(id));
+        fresh.forEach((id) => next.delete(id));
         return next;
       });
-      setTimeout(() => {
-        setNewIds((prev) => {
-          const next = new Set(prev);
-          fresh.forEach((id) => next.delete(id));
-          return next;
-        });
-      }, 3000);
-    }
+    }, 3000);
 
-    prevIdsRef.current = currentIds;
+    return () => clearTimeout(timer);
   }, [issues]);
 
   return (

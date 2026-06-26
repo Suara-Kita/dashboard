@@ -9,10 +9,10 @@ export async function GET() {
   try {
     const [pendingRows, approvedRows, highUrgencyRows, votersRows] =
       await Promise.all([
-        sql("SELECT COUNT(*)::int AS count FROM interactions WHERE status = 'pending' AND source_channel != 'news_crawler'"),
-        sql("SELECT COUNT(*)::int AS count FROM interactions WHERE status = 'approved' AND source_channel != 'news_crawler'"),
-        sql("SELECT COUNT(*)::int AS count FROM interactions WHERE status = 'pending' AND urgency = 'high' AND source_channel != 'news_crawler'"),
-        sql("SELECT COUNT(*)::int AS count FROM voter_profiles vp WHERE EXISTS (SELECT 1 FROM interactions i WHERE i.voter_profile_id = vp.id AND i.source_channel != 'news_crawler')"),
+        sql("SELECT COUNT(*)::int AS count FROM interactions WHERE status = 'pending' AND source_channel NOT IN ('news_crawler', 'web_portal')"),
+        sql("SELECT COUNT(*)::int AS count FROM interactions WHERE status = 'approved' AND source_channel NOT IN ('news_crawler', 'web_portal')"),
+        sql("SELECT COUNT(*)::int AS count FROM interactions WHERE status = 'pending' AND urgency = 'high' AND source_channel NOT IN ('news_crawler', 'web_portal')"),
+        sql("SELECT COUNT(*)::int AS count FROM voter_profiles vp WHERE EXISTS (SELECT 1 FROM interactions i WHERE i.voter_profile_id = vp.id AND i.source_channel NOT IN ('news_crawler', 'web_portal'))"),
       ]);
 
     const pendingCount = (pendingRows[0] as { count: number })?.count ?? 0;
