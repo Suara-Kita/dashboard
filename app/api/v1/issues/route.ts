@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const urgency = searchParams.get('urgency');
     const scope = searchParams.get('scope');
     const sourceChannel = searchParams.get('source_channel');
-    const excludeSourceChannel = searchParams.get('exclude_source_channel');
+    const excludeSourceChannels = searchParams.getAll('exclude_source_channel');
     const sort = searchParams.get('sort') || 'ingested_at';
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
     const perPage = Math.min(100, Math.max(1, parseInt(searchParams.get('per_page') || '20', 10)));
@@ -26,7 +26,11 @@ export async function GET(request: NextRequest) {
     if (urgency) { conditions.push(`i.urgency = $${idx++}`); params.push(urgency); }
     if (scope) { conditions.push(`i.scope = $${idx++}`); params.push(scope); }
     if (sourceChannel) { conditions.push(`i.source_channel = $${idx++}`); params.push(sourceChannel); }
-    if (excludeSourceChannel) { conditions.push(`i.source_channel != $${idx++}`); params.push(excludeSourceChannel); }
+    if (excludeSourceChannels.length > 0) {
+      const placeholders = excludeSourceChannels.map(() => `$${idx++}`).join(', ');
+      conditions.push(`i.source_channel NOT IN (${placeholders})`);
+      params.push(...excludeSourceChannels);
+    }
     const marked = searchParams.get('marked');
     if (marked === 'true') { conditions.push('i.marked = TRUE'); }
     else if (marked === 'false') { conditions.push('i.marked = FALSE'); }

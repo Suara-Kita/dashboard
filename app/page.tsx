@@ -7,6 +7,7 @@ import ColumnFeed from "@/components/ColumnFeed";
 import ColumnNews from "@/components/ColumnNews";
 import ColumnMarked from "@/components/ColumnMarked";
 import ColumnPdm from "@/components/ColumnPdm";
+import ColumnOnnAI from "@/components/ColumnOnnAI";
 import SettingsDialog from "@/components/SettingsDialog";
 import ApproveDialog from "@/components/ApproveDialog";
 import NewsDialog from "@/components/NewsDialog";
@@ -48,6 +49,13 @@ const DEFAULT_COLUMNS: ColumnFeedConfig[] = [
     statusFilter: "",
     visible: true,
   },
+  {
+    id: "onn-ai",
+    title: "Onn AI — Unmatched",
+    statusFilter: "",
+    visible: true,
+    kind: "onn-ai",
+  },
 ];
 
 export default function DashboardPage() {
@@ -77,7 +85,8 @@ export default function DashboardPage() {
         <ColumnMap markerStyle={markerStyle} />
       </BackgroundWrapper>
       <main className="fixed inset-0 z-10 flex flex-col gap-0 p-2">
-        <div className="w-full h-full flex p-lg gap-4 overflow-hidden pt-16">
+        <div className="w-full h-full overflow-x-auto overflow-y-hidden pt-16">
+        <div className="h-full flex gap-4 min-w-max">
           {columns
             .filter((c) => c.visible)
             .map((col) =>
@@ -93,6 +102,8 @@ export default function DashboardPage() {
                   onOpenDialog={openDialog}
                   onOpenNewsDialog={openNewsDialog}
                 />
+              ) : col.kind === "onn-ai" ? (
+                <ColumnOnnAI key={col.id} title={col.title} />
               ) : (
                 <ColumnFeed
                   key={col.id}
@@ -102,6 +113,7 @@ export default function DashboardPage() {
                 />
               ),
             )}
+        </div>
         </div>
       </main>
 
