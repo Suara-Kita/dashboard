@@ -44,7 +44,7 @@ export interface ColumnFeedConfig {
   title: string;
   statusFilter: string;
   visible: boolean;
-  kind?: 'feed' | 'news' | 'marked';
+  kind?: 'feed' | 'news' | 'marked' | 'onn-ai';
 }
 
 export interface PaginatedResponse<T> {
